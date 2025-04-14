@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - RAM DUMPCHIPS Utility</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-['Inter']">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-microchip text-blue-600 text-2xl mr-2"></i>
+                        <span class="font-bold text-xl">RAM DUMPCHIPS Utility</span>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="/format.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Format</a>
+                        <a href="/write.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Write</a>
+                        <a href="/status.html" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- System Status Card -->
+        <div class="bg-white shadow rounded-lg mb-6">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    System Status
+                </h3>
+                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Device Status -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                    <i class="fas fa-sd-card text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Device Status
+                                        </dt>
+                                        <dd class="flex items-center">
+                                            <div class="flex items-center text-sm font-medium text-gray-900" id="deviceStatus">
+                                                Checking...
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last Operation -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                    <i class="fas fa-check-circle text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Last Operation
+                                        </dt>
+                                        <dd class="flex items-center">
+                                            <div class="text-sm font-medium text-gray-900" id="lastOperation">
+                                                None
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Format Type -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                                    <i class="fas fa-hdd text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Current Format
+                                        </dt>
+                                        <dd class="flex items-center">
+                                            <div class="text-sm font-medium text-gray-900" id="formatType">
+                                                Checking...
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operation Logs -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Operation Logs
+                    </h3>
+                    <button onclick="refreshLogs()" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <pre id="logContent" class="text-sm text-gray-700 font-mono whitespace-pre-wrap h-96 overflow-y-auto">Loading logs...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize status updates
+        let logEntries = [];
+        
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                // Update device status
+                document.getElementById('deviceStatus').innerHTML = `
+                    <span class="flex items-center">
+                        <span class="flex-shrink-0 h-2 w-2 rounded-full ${data.status === 'operational' ? 'bg-green-400' : 'bg-red-400'} mr-2"></span>
+                        ${data.status === 'operational' ? 'Connected' : 'Disconnected'}
+                    </span>
+                `;
+                
+                // Update last operation
+                if (data.lastOperation) {
+                    document.getElementById('lastOperation').textContent = data.lastOperation;
+                }
+                
+                // Update format type
+                if (data.formatType) {
+                    document.getElementById('formatType').textContent = data.formatType;
+                }
+                
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        function addLogEntry(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logEntries.unshift(entry);
+            
+            // Keep only the last 100 entries
+            if (logEntries.length > 100) {
+                logEntries.pop();
+            }
+            
+            document.getElementById('logContent').textContent = logEntries.join('\n');
+        }
+
+        async function refreshLogs() {
+            addLogEntry('Refreshing status...', 'info');
+            await updateStatus();
+            addLogEntry('Status refreshed', 'success');
+        }
+
+        // Initial load
+        updateStatus();
+        addLogEntry('System initialized', 'info');
+
+        // Set up periodic updates
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html>
