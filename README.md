@@ -16,7 +16,7 @@ To install the RAM DUMPCHIPS App, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ram-dumpchips-app.git
+   git clone https://github.com/djshez/ram-dumpchips-app.git
    cd ram-dumpchips-app
    ```
 
