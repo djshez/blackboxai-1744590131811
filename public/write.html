@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write DUMPCHIPS - RAM DUMPCHIPS Utility</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-['Inter']">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-microchip text-blue-600 text-2xl mr-2"></i>
+                        <span class="font-bold text-xl">RAM DUMPCHIPS Utility</span>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="/format.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Format</a>
+                        <a href="/write.html" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Write</a>
+                        <a href="/status.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Write RAM DUMPCHIPS Program
+                    </h3>
+                    <div class="mt-2 max-w-xl text-sm text-gray-500">
+                        <p>Configure and write the RAM DUMPCHIPS program to your formatted CompactFlash card.</p>
+                    </div>
+
+                    <form id="writeForm" class="mt-5 space-y-6">
+                        <!-- NDMP ID Configuration -->
+                        <div>
+                            <label for="ndmpId" class="block text-sm font-medium text-gray-700">
+                                NDMP Identifier (XXXX)
+                            </label>
+                            <div class="mt-1 flex rounded-md shadow-sm">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                                    NDMP-000-
+                                </span>
+                                <input type="text" name="ndmpId" id="ndmpId" 
+                                    class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm border-gray-300" 
+                                    placeholder="Enter 4 characters"
+                                    pattern="[A-Za-z0-9]{4}"
+                                    maxlength="4"
+                                    required>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">
+                                Enter a 4-character identifier (letters and numbers only)
+                            </p>
+                        </div>
+
+                        <!-- Device Information -->
+                        <div class="rounded-md bg-blue-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-blue-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-800">
+                                        Device Information
+                                    </h3>
+                                    <div class="mt-2 text-sm text-blue-700">
+                                        <p id="deviceInfo">Checking device status...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Messages -->
+                        <div id="statusMessage" class="hidden">
+                            <div class="rounded-md p-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-info-circle text-blue-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-gray-700" id="statusText"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div id="progressBar" class="hidden">
+                            <div class="bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2" id="progressText">0%</p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-5">
+                            <button type="submit" 
+                                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Write to Card
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check device status on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateDeviceInfo(data.status === 'operational' ? 'Device ready' : 'Device not ready');
+            } catch (error) {
+                updateDeviceInfo('Error checking device status');
+            }
+        });
+
+        function updateDeviceInfo(message) {
+            document.getElementById('deviceInfo').textContent = message;
+        }
+
+        document.getElementById('writeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const ndmpId = document.getElementById('ndmpId').value.toUpperCase();
+            if (!ndmpId.match(/^[A-Z0-9]{4}$/)) {
+                showStatus('Please enter a valid 4-character identifier', 'error');
+                return;
+            }
+
+            const statusMsg = document.getElementById('statusMessage');
+            const progressBar = document.getElementById('progressBar');
+            const progressBarFill = progressBar.querySelector('div');
+            const progressText = document.getElementById('progressText');
+
+            statusMsg.classList.remove('hidden');
+            progressBar.classList.remove('hidden');
+
+            try {
+                showStatus('Initializing write process...', 'info');
+                updateProgress(0);
+
+                const response = await fetch('/api/write', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ndmpId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Write request failed');
+                }
+
+                // Simulate progress (in real implementation, this would be based on actual progress)
+                for (let i = 0; i <= 100; i += 10) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    updateProgress(i);
+                    showStatus(`Writing NDMP-000-${ndmpId}: ${i}%`, 'info');
+                }
+
+                showStatus('Write completed successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/status.html';
+                }, 2000);
+
+            } catch (error) {
+                showStatus('Error during writing: ' + error.message, 'error');
+                updateProgress(0);
+            }
+        });
+
+        function showStatus(message, type) {
+            const statusMsg = document.getElementById('statusMessage');
+            const statusText = document.getElementById('statusText');
+            statusMsg.classList.remove('hidden');
+            statusText.textContent = message;
+            
+            // Update status message styling based on type
+            statusMsg.querySelector('div').className = 
+                `rounded-md p-4 ${type === 'error' ? 'bg-red-50' : type === 'success' ? 'bg-green-50' : 'bg-blue-50'}`;
+            statusMsg.querySelector('i').className = 
+                `fas ${type === 'error' ? 'fa-exclamation-circle text-red-400' : type === 'success' ? 'fa-check-circle text-green-400' : 'fa-info-circle text-blue-400'}`;
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            const progressBarFill = progressBar.querySelector('div');
+            const progressText = document.getElementById('progressText');
+            
+            progressBarFill.style.width = `${percent}%`;
+            progressText.textContent = `${percent}%`;
+        }
+    </script>
+</body>
+</html>
